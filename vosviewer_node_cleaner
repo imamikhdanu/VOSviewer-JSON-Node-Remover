@@ -1,0 +1,144 @@
+import json
+import ipywidgets as widgets
+from IPython.display import display, clear_output
+from google.colab import files
+import io
+
+# Variabel global untuk menyimpan data
+uploaded_data = {}
+json_content = None
+
+def process_file(b):
+    global json_content
+
+    # 1. Cek apakah file sudah diupload
+    if not upload_btn.value:
+        with out:
+            print("Silakan upload file JSON terlebih dahulu!")
+        return
+
+    # Ambil file yang diupload (mengambil file pertama yang diupload)
+    uploaded_filename = next(iter(upload_btn.value))
+    content = upload_btn.value[uploaded_filename]['content']
+
+    try:
+        json_content = json.loads(content.decode('utf-8'))
+
+        # Ambil daftar items (terms)
+        items = json_content['network']['items']
+
+        # Buat list tuple untuk widget (Label ditampilkan, ID disimpan sebagai value)
+        # Format: [('artificial intelligence', 1), ('barcode', 2), ...]
+        options_list = sorted([(item['label'], item['id']) for item in items], key=lambda x: x[0])
+
+        # Update widget selector
+        selector.options = options_list
+
+        with out:
+            clear_output()
+            print(f"File '{uploaded_filename}' berhasil dimuat.")
+            print(f"Total term ditemukan: {len(items)}")
+            print("Silakan pilih term yang ingin DIHAPUS pada kotak di bawah:")
+
+        # Tampilkan container seleksi
+        display(selection_container)
+
+    except Exception as e:
+        with out:
+            print(f"Error membaca file JSON: {e}")
+
+def delete_and_save(b):
+    global json_content
+
+    if json_content is None:
+        return
+
+    ids_to_remove = selector.value
+
+    if not ids_to_remove:
+        with out_process:
+            print("Tidak ada term yang dipilih untuk dihapus.")
+        return
+
+    original_items = json_content['network']['items']
+    original_links = json_content['network']['links']
+
+    # 1. Filter Items (Hapus node)
+    new_items = [item for item in original_items if item['id'] not in ids_to_remove]
+
+    # 2. Filter Links (Hapus garis penghubung yang terkait dengan node yang dihapus)
+    new_links = [
+        link for link in original_links
+        if link['source_id'] not in ids_to_remove and link['target_id'] not in ids_to_remove
+    ]
+
+    # Update JSON content
+    json_content['network']['items'] = new_items
+    json_content['network']['links'] = new_links
+
+    # Hitung statistik
+    deleted_count = len(original_items) - len(new_items)
+    link_deleted_count = len(original_links) - len(new_links)
+
+    # Simpan ke file baru
+    new_filename = 'map_vosviewer_edited.json'
+    with open(new_filename, 'w') as f:
+        json.dump(json_content, f, indent=4)
+
+    with out_process:
+        clear_output()
+        print(f"Berhasil menghapus {deleted_count} term.")
+        print(f"Berhasil menghapus {link_deleted_count} link yang terhubung.")
+        print(f"File baru '{new_filename}' sedang didownload...")
+
+    # Trigger download otomatis
+    files.download(new_filename)
+
+# --- INTERFACE WIDGET ---
+
+# 1. Tombol Upload
+upload_btn = widgets.FileUpload(
+    accept='.json',
+    multiple=False,
+    description='1. Upload JSON'
+)
+
+# 2. Tombol Proses setelah upload
+process_btn = widgets.Button(description="Load Data")
+process_btn.on_click(process_file)
+
+# 3. Selector (Multi-select)
+selector = widgets.SelectMultiple(
+    options=[],
+    description='Term:',
+    disabled=False,
+    rows=15, # Tinggi kotak seleksi
+    layout=widgets.Layout(width='600px')
+)
+
+# 4. Tombol Hapus & Download
+delete_btn = widgets.Button(
+    description='2. Hapus & Download',
+    button_style='danger', # Warna merah
+    icon='trash'
+)
+delete_btn.on_click(delete_and_save)
+
+# Output areas untuk log
+out = widgets.Output()
+out_process = widgets.Output()
+
+# Container Layout
+selection_container = widgets.VBox([
+    widgets.Label("Tahan tombol CTRL (Windows) atau COMMAND (Mac) untuk memilih banyak sekaligus:"),
+    selector,
+    delete_btn,
+    out_process
+])
+
+# Tampilan Awal
+display(widgets.VBox([
+    widgets.Label("Langkah 1: Upload file 'map vosviewer.json' Anda"),
+    widgets.HBox([upload_btn, process_btn]),
+    out
+]))
