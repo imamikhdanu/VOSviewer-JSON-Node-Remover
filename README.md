@@ -1,62 +1,114 @@
-# VOSviewer JSON Node Remover
+# VOSviewer JSON Editor - Hapus Term Tanpa Visualisasi Ulang
 
-Sebuah *tool* interaktif berbasis Python di Google Colab untuk menghapus *term* (node) yang tidak relevan dari file JSON VOSviewer secara instan, tanpa merusak struktur data jaringan.
+Tool untuk mengedit file JSON hasil export VOSviewer tanpa perlu memulai visualisasi dari awal. Cocok ketika Anda sudah terlanjur membuat visualisasi tapi ingin menghapus beberapa term yang tidak diperlukan.
 
-**Deskripsi Singkat:**
-*Tool* praktis untuk membersihkan *term* yang tidak diinginkan dari file ekspor JSON VOSviewer, sehingga Anda tidak perlu mengulang pembuatan *map* bibliometrik dari awal setelah data divisualisasikan.
+## 🎯 Latar Belakang
 
----
+Pernah mengalami situasi ini?
+- Sudah cape-cape bikin visualisasi VOSviewer, tapi ternyata ada beberapa term yang tidak relevan
+- Males ngulang dari awal karena proses filtering dan settingnya ribet
+- Tapi tetap ingin menghapus term-term tersebut beserta koneksinya
 
-## 💡 Kenapa Tool Ini Dibuat? (Latar Belakang Masalah)
+**Nah, tool ini solusinya!** Cukup upload file JSON hasil export VOSviewer, pilih term yang ingin dihapus, dan dapatkan file JSON baru yang sudah teredit.
 
-Pernahkah Anda selesai melakukan *text mining*, menunggu *loading* data yang lama, dan memvisualisasikan data di VOSviewer, lalu baru menyadari ada kata-kata umum yang tidak relevan (seperti "article", "study", "paper") ikut muncul di dalam *map*?
+## 📋 Deskripsi
 
-Jika harus mengulang proses dari awal (*Create Map* ➡️ *Extract Data* ➡️ *Select Terms*), tentu akan sangat melelahkan dan membuang banyak waktu, terutama jika dataset yang digunakan sangat besar (misalnya ribuan artikel tentang otomasi perpustakaan).
+Tool ini memungkinkan Anda untuk:
+- Memuat file JSON hasil visualisasi VOSviewer yang sudah jadi
+- Melihat daftar semua term yang ada
+- Memilih satu atau banyak term untuk dihapus
+- Secara otomatis menghapus semua link yang terhubung dengan term tersebut
+- Mendownload file JSON baru yang siap digunakan kembali
 
-**Solusi "Anti-Capek" dengan Tool Ini:**
-Daripada mengulang dari awal, Anda cukup mengekspor *map* yang sudah jadi ke format JSON, menghapus *term* yang mengganggu menggunakan program ini, dan mengimpornya kembali ke VOSviewer. Visualisasi Anda akan langsung bersih seketika!
-
----
-
-## ✨ Fitur Utama
-
-- **Interactive UI (User Interface):** Menggunakan `ipywidgets` untuk antarmuka yang intuitif langsung di dalam Google Colab.
-- **Multi-Selection:** Mendukung pemilihan banyak *term* sekaligus untuk dihapus (menggunakan tombol `CTRL` atau `COMMAND`).
-- **Smart Deletion (Penghapusan Pintar):** Tidak hanya menghapus *term* (node), tetapi juga secara otomatis memfilter dan menghapus garis penghubung (link/edge) yang terkait dengan *term* tersebut untuk mencegah *error*/krusial pada visualisasi.
-- **Auto-Download:** File JSON yang sudah dibersihkan otomatis diunduh ke perangkat Anda dengan nama `map_vosviewer_edited.json`.
-
----
+**Tanpa perlu memulai visualisasi dari awal!**
 
 ## 🚀 Cara Penggunaan
 
-### Tahap 1: Ekspor Data dari VOSviewer
-1. Buka *map* Anda yang sudah tervisualisasi di VOSviewer.
-2. Pada panel sebelah kanan, pergi ke tab **Save**.
-3. Di bagian *Network*, klik **Save...** pada opsi **VOSviewer JSON network file**.
-4. Simpan file `.json` tersebut di komputer Anda.
+### Langkah 1: Export File dari VOSviewer
+1. Buka visualisasi VOSviewer Anda yang sudah jadi
+2. Export ke format JSON (File > Export > Create Map File)
+3. Simpan file JSON tersebut
 
-### Tahap 2: Pembersihan Node dengan Tool Ini
-1. Buka *script* ini menggunakan **Google Colab**.
-2. Jalankan cell kode (tekan tombol *Play* atau `Shift + Enter`).
-3. Pada antarmuka yang muncul di bawah cell:
-   - Klik **1. Upload JSON** dan pilih file yang tadi diekspor dari VOSviewer.
-   - Klik **Load Data**.
-4. Daftar *term* akan muncul. Pilih *term* yang ingin Anda hapus (Tahan `CTRL` di Windows atau `COMMAND` di Mac untuk memilih banyak *term* sekaligus).
-5. Klik tombol merah **2. Hapus & Download**.
-6. Program akan memproses data dan otomatis mengunduh file baru bernama `map_vosviewer_edited.json`.
+### Langkah 2: Upload ke Google Colab
+1. Buka notebook ini di Google Colab
+2. Jalankan semua sel (Runtime > Run all)
+3. Klik tombol "1. Upload JSON" dan pilih file Anda
+4. Klik "Load Data"
 
-### Tahap 3: Buka Kembali di VOSviewer
-1. Kembali ke aplikasi VOSviewer.
-2. Pada panel sebelah kanan, pergi ke tab **Open**.
-3. Di bagian *Network*, klik **Open...** pada opsi **VOSviewer JSON network file** dan pilih file `map_vosviewer_edited.json` yang baru saja diunduh.
-4. Selesai! Visualisasi jaringan Anda kini sudah bersih dari *term* yang tidak relevan.
+### Langkah 3: Pilih Term yang Ingin Dihapus
+- Akan muncul daftar semua term dalam visualisasi Anda
+- Pilih term yang tidak diinginkan (gunakan CTRL/COMMAND untuk multi-select)
+- Term yang dipilih akan dihapus beserta seluruh garis penghubungnya
 
----
+### Langkah 4: Download Hasil
+- Klik tombol merah "2. Hapus & Download"
+- File baru `map_vosviewer_edited.json` otomatis terdownload
+- Upload file ini ke VOSviewer dan visualisasi Anda sudah siap tanpa term-term yang tidak diinginkan
 
-## 🛠️ Persyaratan & Dependencies
+## 💡 Contoh Kasus
 
-- Akun Google (untuk menjalankan Google Colab).
-- `json` (Standard Python library)
-- `ipywidgets`
-- `IPython.display`
-- `google.colab`
+**Visualisasi Awal:**
+- 200 term hasil analisis bibliometric
+- Ternyata ada 10 term yang tidak relevan (misalnya kata umum seperti "study", "research")
+
+**Dengan tool ini:**
+1. Cukup hapus 10 term tersebut
+2. Link ke term lain otomatis terhapus
+3. Visualisasi tetap utuh untuk 190 term sisanya
+4. **Tidak perlu mengulang proses filtering dari awal!**
+
+## ✨ Keuntungan
+
+- ✅ **Hemat waktu** - Tidak perlu setting ulang threshold, scoring method, dll
+- ✅ **Presisi** - Hanya menghapus term yang memang tidak diinginkan
+- ✅ **Mudah** - Interface sederhana dengan multi-select
+- ✅ **Aman** - File asli tetap terjaga, selalu bisa upload ulang jika salah pilih
+
+## ⚙️ Fitur Detail
+
+- **Multi-select term**: Pilih banyak term sekaligus
+- **Auto-delete links**: Semua koneksi ke term yang dihapus ikut terhapus
+- **Link integrity**: Link antar term yang tersisa tetap utuh
+- **Instant download**: File langsung terdownload setelah proses selesai
+- **Informasi proses**: Tampilkan jumlah term dan link yang dihapus
+
+## 📊 Perbandingan
+
+| Tanpa Tool Ini | Dengan Tool Ini |
+|----------------|-----------------|
+| Harus visualisasi ulang dari awal | Edit file JSON langsung |
+| Setting parameter ulang (threshold, dll) | Parameter visualisasi tetap |
+| Butuh waktu 5-15 menit | Hanya 1-2 menit |
+| Bisa lupa setting awal | Setting awal tetap terjaga |
+
+## 🔧 Teknis
+
+- Dibuat untuk Google Colab (menggunakan `files.upload()` dan `files.download()`)
+- Menggunakan ipywidgets untuk interface interaktif
+- Mempertahankan struktur asli JSON VOSviewer
+- Hanya memodifikasi bagian `items` dan `links`
+
+## 📝 Tips Penggunaan
+
+1. **Backup file asli** - Meskipun aman, tetap simpan file asli Anda
+2. **Selektif memilih** - Gunakan multi-select untuk efisiensi
+3. **Cek hasil** - Buka file hasil di VOSviewer untuk memastikan visualisasi sesuai harapan
+
+## ❓ Troubleshooting
+
+**Q: File tidak bisa diupload?**
+A: Pastikan file berformat .json dan merupakan hasil export VOSviewer yang valid
+
+**Q: Kok tidak ada term yang muncul?**
+A: Periksa struktur JSON, harus memiliki key `network.items`
+
+**Q: Salah hapus term?**
+A: Upload ulang file asli dan ulangi proses
+
+## 📄 Lisensi
+
+MIT License - Bebas digunakan dan dimodifikasi
+
+## 🙏 Kontribusi
+
+Ada saran atau menemukan bug? Silakan buat issue atau pull request.
