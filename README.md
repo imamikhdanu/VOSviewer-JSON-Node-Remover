@@ -105,10 +105,5 @@ A: Periksa struktur JSON, harus memiliki key `network.items`
 **Q: Salah hapus term?**
 A: Upload ulang file asli dan ulangi proses
 
-## 📄 Lisensi
-
-MIT License - Bebas digunakan dan dimodifikasi
-
-## 🙏 Kontribusi
-
-Ada saran atau menemukan bug? Silakan buat issue atau pull request.
+## 🤖 Tentang Pengembangan
+**Dikembangkan dengan bantuan Google Gemini 3.5 Pro**
